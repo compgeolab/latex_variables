@@ -5,14 +5,13 @@ from varname import nameof
 
 from .utils import (
     build_latex_variable,
-    format_variable_name,
     format_value,
     format_unit,
     check_latex_variable_name,
 )
 
 
-def to_latex(variable, name=None, unit=None, fmt=None):
+def to_latex(variable, name, unit=None, fmt=None):
     """
     Converts a variable to a LaTeX variable definition
 
@@ -20,10 +19,9 @@ def to_latex(variable, name=None, unit=None, fmt=None):
     ----------
     variable : float or int
         Variable to convert to a LaTeX variable definition.
-    name : str (optional)
-        Variable name for the LaTeX variable. If None, the name of ``variable``
-        will be used after small formatting for a valid LaTeX variable. Default
-        to None.
+    name : str
+        Variable name for the LaTeX variable. Must be a valid name for a LaTeX
+        variable (no underscores, no dashes, only alphabetic characters).
     unit : str (optional)
         Units of the variable. Default to None.
     fmt : str (optional)
@@ -38,19 +36,17 @@ def to_latex(variable, name=None, unit=None, fmt=None):
     Example
     -------
     >>> height = 30
-    >>> unit = "m"
-    >>> to_latex(height, unit="m")
-    r'\\newcommand{\\Height}{$30 \\, \\text{m}$}'
+    >>> to_latex(height, name="Height", unit="m")
+    '\\\\newcommand{\\\\Height}{$30 \\\\, \\\\text{m}$}'
 
     >>> density = 2670
     >>> unit = "kg m-3"
-    >>> to_latex(height, unit="m")
-    r'\\newcommand{\\Height}{$2670 \\, \\text{kg} \\text{m}^{-3}$}'
+    >>> to_latex(density, name="Density", unit="kg m-3")
+    '\\\\newcommand{\\\\Density}{$2670 \\\\, \\\\text{kg} \\\\text{m}^{-3}$}'
 
     """
-    # Create LaTeX variable name from Python variable name if `name` is None
-    if name is None:
-        name = format_variable_name(nameof(variable))
+    # \Check if name contains a valid name for a LaTeX variable
+    check_latex_variable_name(name)
     # Format value of the variable
     if fmt:
         value = format_value(variable, fmt)

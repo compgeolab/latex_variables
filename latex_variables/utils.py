@@ -12,7 +12,7 @@ def build_latex_variable(name, value, unit):
     ----------
     name : str
         Name of the LaTeX variable. Should be a valid name for a LaTeX
-        variable (see `func:format_variable_name`).
+        variable.
     value : str
         String with the numbers for the LaTeX variable (see
         `func:format_value`).
@@ -33,25 +33,8 @@ def check_latex_variable_name(name):
     Check if name for the LaTeX variable is valid
     """
     pattern = r"^[a-zA-Z]+$"
-    if not re.match(name, pattern):
+    if not re.match(pattern, name):
         raise ValueError("Invalid name for a LaTeX variable '{}'.".format(name))
-
-
-def format_variable_name(name):
-    """
-    Convert Python variable name to a valid LaTeX variable name
-
-    The conversion is carried out by removing underscores and
-    capitalizing the first letter of each word.
-
-    Example
-    -------
-    >>> _format_variable_name("my_variable")
-    'MyVariable'
-    """
-    if len(name.split()) != 1:
-        raise ValueError("Invalid variable name '{}'".format(name))
-    return name.strip().replace("_", " ").title().replace(" ", "")
 
 
 def format_value(value, fmt):
