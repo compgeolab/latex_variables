@@ -129,7 +129,7 @@ def format_power_of_ten(value):
     Examples
     --------
     >>> format_power_of_ten(1e-5)
-    ... "10$^{-5}$"
+    '10$^{-5}$'
 
     """
     power = np.log10(value)
