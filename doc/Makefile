@@ -26,6 +26,7 @@ clean:
 	rm -rf $(BUILDDIR)/linkcheck
 	rm -rf api/generated
 	rm -rf gallery
+	rm -rf tutorials
 	rm -rf sample_data
 	rm -rf .ipynb_checkpoints
 

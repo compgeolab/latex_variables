@@ -13,8 +13,8 @@ LaTeX Variables
     :hidden:
     :caption: Getting Started
 
+    tutorials/overview.rst
     install.rst
-    gallery/index.rst
 
 .. toctree::
     :maxdepth: 2
