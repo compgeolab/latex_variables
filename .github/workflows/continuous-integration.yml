@@ -1,0 +1,166 @@
+# Configuration for testing and deploying with GitHub Actions
+#
+# NOTE: Pin actions to a specific commit to avoid having the authentication
+# token stolen if the Action is compromised. See the comments and links here:
+# https://github.com/pypa/gh-action-pypi-publish/issues/27
+#
+name: test
+
+# Only build PRs, the master branch, and releases. Pushes to branches will only
+# be built when a PR is opened. This avoids duplicated buids in PRs comming
+# from branches in the origin repository (1 for PR and 1 for push).
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  release:
+    types:
+      - published
+
+# Use bash by default in all jobs
+defaults:
+  run:
+    # Using "-l {0}" is necessary for conda environments to be activated
+    # But this breaks on MacOS if using actions/setup-python:
+    # https://github.com/actions/setup-python/issues/132
+    shell: bash
+
+jobs:
+
+  #############################################################################
+  # Run tests, build the docs, and deploy if needed
+  test:
+    name: ${{ matrix.os }} py${{ matrix.python }} ${{ matrix.dependencies }}
+    runs-on: ${{ matrix.os }}-latest
+    strategy:
+      # Otherwise, the workflow would stop if a single job fails. We want to
+      # run all of them to catch failures in different combinations.
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+        python: [3.6, 3.7, 3.8, 3.9]
+        # If "optional", will install non-required dependencies in the build
+        # environment. Otherwise, only required dependencies are installed.
+        dependencies: [""]
+        include:
+          - os: ubuntu
+            python: 3.8
+            dependencies: optional
+          - os: macos
+            python: 3.8
+            dependencies: optional
+          - os: windows
+            python: 3.8
+            dependencies: optional
+    env:
+      REQUIREMENTS: requirements.txt
+      REQUIREMENTS_DEV: requirements-dev.txt
+      REQUIREMENTS_OPTIONAL: requirements-optional.txt
+      INSTALL_EXTRA:
+      DEPENDENCIES: ${{ matrix.dependencies }}
+      # Used to tag codecov submissions
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python }}
+
+    steps:
+
+      # Checks-out your repository under $GITHUB_WORKSPACE
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          # Need to fetch more than the last commit so that versioneer can
+          # create the correct version string. If the number of commits since
+          # the last release is greater than this, the version still be wrong.
+          # Increase if necessary.
+          fetch-depth: 100
+          # The GitHub token is preserved by default but this job doesn't need
+          # to be able to push to GitHub.
+          persist-credentials: false
+
+      # Need the tags so that versioneer can form a valid version number
+      - name: Fetch git tags
+        run: git fetch origin 'refs/tags/*:refs/tags/*'
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Get the pip cache folder
+        id: pip-cache
+        run: |
+          echo "::set-output name=dir::$(pip cache dir)"
+
+      - name: Setup caching for pip packages
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.pip-cache.outputs.dir }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install requirements
+        run: |
+          requirements_file=requirements-full.txt
+          if [ ! -z "$REQUIREMENTS" ]; then
+              echo "Capturing dependencies from $REQUIREMENTS"
+              cat $REQUIREMENTS >> $requirements_file
+          fi
+          if [ ! -z "$REQUIREMENTS_DEV" ]; then
+              echo "Capturing dependencies from $REQUIREMENTS_DEV"
+              cat $REQUIREMENTS_DEV >> $requirements_file
+          fi
+          if [ "$DEPENDENCIES" == "optional" ]; then
+              echo "Capturing optional dependencies from $REQUIREMENTS_OPTIONAL"
+              cat $REQUIREMENTS_OPTIONAL >> $requirements_file
+          fi
+          if [ ! -z "$INSTALL_EXTRA" ]; then
+              echo "Capturing extra dependencies: $INSTALL_EXTRA"
+              echo "# Extra" >> $requirements_file
+              # Use xargs to print one argument per line
+              echo $INSTALL_EXTRA | xargs -n 1 >> $requirements_file
+          fi
+          if [ -f $requirements_file ]; then
+              echo "Collected dependencies:"
+              cat $requirements_file
+              echo ""
+              # Install wheel before anything else so pip can use wheels for
+              # other packages.
+              python -m pip install setuptools wheel
+              python -m pip install --requirement $requirements_file
+          else
+              echo "No requirements defined."
+          fi
+
+      - name: List installed packages
+        run: pip freeze
+
+      - name: Build source and wheel distributions
+        run: |
+          python setup.py sdist bdist_wheel
+          echo ""
+          echo "Generated files:"
+          ls -lh dist/
+
+      - name: Install the package
+        run: pip install --no-deps dist/*.whl
+
+      - name: Run the tests
+        run: make test
+
+      - name: Build the documentation
+        run: make -C doc clean all
+
+      - name: Convert coverage report to XML for codecov
+        run: coverage xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v1
+        with:
+          file: ./coverage.xml
+          env_vars: OS,PYTHON,DEPENDENCIES
+          # Don't mark the job as failed if the upload fails for some reason.
+          # It does sometimes but shouldn't be the reason for running
+          # everything again unless something else is broken.
+          fail_ci_if_error: false
