@@ -40,7 +40,7 @@ PACKAGES = find_packages(exclude=["doc"])
 SCRIPTS = []
 PACKAGE_DATA = {}
 INSTALL_REQUIRES = []
-PYTHON_REQUIRES = ">=3.7"
+PYTHON_REQUIRES = ">=3.6"
 
 # Configuration for setuptools-scm
 SETUP_REQUIRES = ["setuptools_scm"]
