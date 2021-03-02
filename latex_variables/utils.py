@@ -24,8 +24,7 @@ def build_latex_variable(name, value, unit):
         return r"\newcommand{{\{name}}}{{${value} \, {unit}$}}".format(
             name=name, value=value, unit=unit
         )
-    else:
-        return r"\newcommand{{\{name}}}{{{value}}}".format(name=name, value=value)
+    return r"\newcommand{{\{name}}}{{{value}}}".format(name=name, value=value)
 
 
 def check_latex_variable_name(name):

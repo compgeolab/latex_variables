@@ -1,8 +1,6 @@
 """
 Convert variables to LaTeX variable definitions
 """
-from varname import nameof
-
 from .utils import (
     build_latex_variable,
     format_value,
