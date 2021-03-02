@@ -6,17 +6,16 @@
 #
 name: code-style
 
-# Only build PRs and the master branch. Pushes to branches will only be built
+# Only build PRs and the main branch. Pushes to branches will only be built
 # when a PR is opened.
 on:
   pull_request:
   push:
     branches:
-      - master
+      - main
 
 ###############################################################################
 jobs:
-
   black:
     name: black [format]
     runs-on: ubuntu-latest
@@ -29,7 +28,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - name: Install requirements
         run: pip install black
@@ -52,7 +51,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - name: Install requirements
         run: pip install flake8
@@ -75,7 +74,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - name: Install requirements
         run: pip install pylint==2.4.*

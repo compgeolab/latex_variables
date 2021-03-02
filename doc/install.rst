@@ -27,7 +27,7 @@ Installing the latest development version
 
 You can use ``pip`` to install the latest source from Github::
 
-    pip install https://github.com/fatiando/latex_variables/archive/master.zip
+    pip install https://github.com/fatiando/latex_variables/archive/main.zip
 
 Alternatively, you can clone the git repository locally and install from there::
 
