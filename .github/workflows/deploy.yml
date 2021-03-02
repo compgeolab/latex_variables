@@ -140,16 +140,6 @@ jobs:
               echo "Capturing dependencies from $REQUIREMENTS_DEV"
               cat $REQUIREMENTS_DEV >> $requirements_file
           fi
-          if [ "$DEPENDENCIES" == "optional" ]; then
-              echo "Capturing optional dependencies from $REQUIREMENTS_OPTIONAL"
-              cat $REQUIREMENTS_OPTIONAL >> $requirements_file
-          fi
-          if [ ! -z "$INSTALL_EXTRA" ]; then
-              echo "Capturing extra dependencies: $INSTALL_EXTRA"
-              echo "# Extra" >> $requirements_file
-              # Use xargs to print one argument per line
-              echo $INSTALL_EXTRA | xargs -n 1 >> $requirements_file
-          fi
           if [ -f $requirements_file ]; then
               echo "Collected dependencies:"
               cat $requirements_file

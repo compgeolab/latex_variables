@@ -39,24 +39,9 @@ jobs:
       matrix:
         os: [ubuntu, macos, windows]
         python: [3.6, 3.7, 3.8, 3.9]
-        # If "optional", will install non-required dependencies in the build
-        # environment. Otherwise, only required dependencies are installed.
-        dependencies: [""]
-        include:
-          - os: ubuntu
-            python: 3.8
-            dependencies: optional
-          - os: macos
-            python: 3.8
-            dependencies: optional
-          - os: windows
-            python: 3.8
-            dependencies: optional
     env:
       REQUIREMENTS: requirements.txt
       REQUIREMENTS_DEV: requirements-dev.txt
-      INSTALL_EXTRA:
-      DEPENDENCIES: ${{ matrix.dependencies }}
       # Used to tag codecov submissions
       OS: ${{ matrix.os }}
       PYTHON: ${{ matrix.python }}
@@ -107,16 +92,6 @@ jobs:
           if [ ! -z "$REQUIREMENTS_DEV" ]; then
               echo "Capturing dependencies from $REQUIREMENTS_DEV"
               cat $REQUIREMENTS_DEV >> $requirements_file
-          fi
-          if [ "$DEPENDENCIES" == "optional" ]; then
-              echo "Capturing optional dependencies from $REQUIREMENTS_OPTIONAL"
-              cat $REQUIREMENTS_OPTIONAL >> $requirements_file
-          fi
-          if [ ! -z "$INSTALL_EXTRA" ]; then
-              echo "Capturing extra dependencies: $INSTALL_EXTRA"
-              echo "# Extra" >> $requirements_file
-              # Use xargs to print one argument per line
-              echo $INSTALL_EXTRA | xargs -n 1 >> $requirements_file
           fi
           if [ -f $requirements_file ]; then
               echo "Collected dependencies:"
