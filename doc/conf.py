@@ -17,7 +17,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.extlinks",
     "sphinx.ext.intersphinx",
-    "matplotlib.sphinxext.plot_directive",
+    #  "matplotlib.sphinxext.plot_directive",
     "sphinx.ext.napoleon",
     "sphinx_gallery.gen_gallery",
 ]
