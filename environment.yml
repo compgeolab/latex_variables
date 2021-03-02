@@ -6,6 +6,7 @@ dependencies:
   - python=3.7
   - setuptools_scm
   # Development requirements
+  - matplotlib
   - pytest
   - pytest-cov
   - coverage

@@ -3,8 +3,8 @@ PROJECT=latex_variables
 TESTDIR=tmp-test-dir-with-unique-name
 PYTEST_ARGS=--cov-config=../.coveragerc --cov-report=term-missing --cov=$(PROJECT) --doctest-modules -v --pyargs
 LINT_FILES=setup.py $(PROJECT)
-BLACK_FILES=setup.py $(PROJECT) examples doc/conf.py
-FLAKE8_FILES=setup.py $(PROJECT) examples doc/conf.py
+BLACK_FILES=setup.py $(PROJECT)
+FLAKE8_FILES=setup.py $(PROJECT)
 
 help:
 	@echo "Commands:"
