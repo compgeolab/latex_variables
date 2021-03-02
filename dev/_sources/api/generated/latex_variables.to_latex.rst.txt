@@ -1,0 +1,12 @@
+latex\_variables.to\_latex
+==========================
+
+.. currentmodule:: latex_variables
+
+.. autofunction:: to_latex
+
+.. include:: backreferences/latex_variables.to_latex.examples
+
+.. raw:: html
+
+     <div style='clear:both'></div>
