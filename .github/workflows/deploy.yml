@@ -19,8 +19,7 @@ on:
 # Use bash by default in all jobs
 defaults:
   run:
-    # The -l {0} is necessary for conda environments to be activated
-    shell: bash -l {0}
+    shell: bash
 
 jobs:
   #############################################################################
@@ -101,9 +100,8 @@ jobs:
     # Only publish from the origin repository, not forks
     if: github.repository == 'compgeolab/latex_variables'
     env:
-      CONDA_REQUIREMENTS: requirements.txt
-      CONDA_REQUIREMENTS_DEV: requirements-dev.txt
-      CONDA_INSTALL_EXTRA:
+      REQUIREMENTS: requirements.txt
+      REQUIREMENTS_DEV: requirements-dev.txt
       PYTHON: 3.8
 
     steps:
@@ -127,7 +125,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: $PYTHON
 
       - name: Install requirements
         run: |
